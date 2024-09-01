@@ -12,7 +12,7 @@ def channel_attention(x, ratio=8):
   # Arguments
     x: input tensor of 4D (batch, h, w, c)
     ratio(int): the reduction ratio for the hidden layer
-  # Returns 
+  # Returns
     x(tensor): the output tensor after appying channel attention module
   '''
   # get the channel
@@ -30,10 +30,10 @@ def channel_attention(x, ratio=8):
                     kernel_initializer='he_normal',
                     use_bias=True,
                     bias_initializer='zeros')
-  
-  shared_layer2 = Dense(units=channel, 
-                     kernel_initializer='he_normal',
-                     use_bias='zeros')
+
+  shared_layer2 = Dense(units=channel,
+                    kernel_initializer='he_normal',
+                    use_bias='zeros')
 
   avg_dense1 = shared_layer1(avg_pool)
   assert avg_dense1.get_shape()[1:] == (1, 1, channel//ratio)
@@ -51,7 +51,7 @@ def channel_attention(x, ratio=8):
 
   return multiply([cbam_feature, x])
 
-# Test 
+# Test
 input_shape = (4, 64, 64, 128)
 test_tensor = tf.random.normal(input_shape)
 channel = test_tensor.get_shape()[-1] if K.image_data_format() == 'channels_last' else 1
@@ -80,13 +80,12 @@ def spatial_attention(x):
 					padding='same',
 					activation='sigmoid',
 					kernel_initializer='he_normal',
-					use_bias=False)(concat)	
+					use_bias=False)(concat)
   cbam_feature = Activation('sigmoid')(cbam_feature)
-     
   return multiply([x, cbam_feature],)
 
 
-# Test 
+# Test
 input_shape = (4, 64, 64, 128)
 test_tensor = tf.random.normal(input_shape)
 channel = test_tensor.get_shape()[-1] if K.image_data_format() == 'channels_last' else 1

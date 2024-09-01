@@ -24,19 +24,19 @@ def attach_cbam(net):
 def conv_bn_relu(x, filters, kernel_size, strides, padding=0):
   '''
   Input:
-  x: input tensor 
+  x: input tensor
     filters: the number of filters -> int
     kernel_size: the sixe of the kernel -> int
     strides: the strides -> int
-  
+
   Return:
     outout tensor from applying conv, batchNorm and Relu
   '''
 
-  x = Conv2D(filters=filters, 
-             kernel_size=kernel_size, 
-             strides=strides,
-             padding='same')(x)
+  x = Conv2D(filters=filters,
+            kernel_size=kernel_size,
+            strides=strides,
+            padding='same')(x)
   x = BatchNormalization()(x)
   x = ReLU()(x)
   return x
@@ -60,7 +60,7 @@ def identity_block(x, filters, cbam):
 
   x = Add()([x, input_tensor])
   x = ReLU()(x)
-  
+
   # attach cbam block
   if cbam:
     x = attach_cbam(x)
@@ -72,12 +72,12 @@ def projection_block(x, filters, strides, cbam): # strides are added because it 
   Input:
     x: input tensor
     filters: number of filters -> int
-    strides: the strides -> int 
+    strides: the strides -> int
     cbam(boolean): attach cbma or not
 
 
   Return:
-    putput tensor after applying projection block's elements 
+    putput tensor after applying projection block's elements
   '''
   # left stream
   input_tensor = x
@@ -99,7 +99,7 @@ def projection_block(x, filters, strides, cbam): # strides are added because it 
   return x
 
 
-def res_block(x, filters, reps, strides, cbam):  # reps paremeter is added since resnet is a projection block followed by a repetition of identity 
+def res_block(x, filters, reps, strides, cbam):  # reps paremeter is added since resnet is a projection block followed by a repetition of identity
   '''
   Input:
     x: input tensor
@@ -123,9 +123,9 @@ def resnet50(img_size, cbam=True):
   x = MaxPool2D(pool_size=3, strides=2, padding='same')(x)
 
   x = res_block(x, filters=64, reps=3, strides=1, cbam=cbam)
-  x = res_block(x, filters=128, reps=4, strides=2, cbam=cbam)  
-  x = res_block(x, filters=256, reps=6, strides=2, cbam=cbam)  
-  x = res_block(x, filters=512, reps=3, strides=2, cbam=cbam)  
+  x = res_block(x, filters=128, reps=4, strides=2, cbam=cbam)
+  x = res_block(x, filters=256, reps=6, strides=2, cbam=cbam)
+  x = res_block(x, filters=512, reps=3, strides=2, cbam=cbam)
 
   x = GlobalAvgPool2D()(x)
   output = Dense(units=7, activation='softmax')(x)
